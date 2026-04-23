@@ -1,0 +1,7 @@
+.DS_Store
+.writing-skills/.env
+preview-*.html
+*.log
+__pycache__/
+*.pyc
+.tmp/
