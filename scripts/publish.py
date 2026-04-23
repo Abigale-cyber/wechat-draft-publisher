@@ -12,6 +12,8 @@
 import argparse
 import json
 import os
+import shutil
+import subprocess
 import sys
 import tempfile
 
@@ -37,6 +39,62 @@ DEFAULT_COVER = os.path.join(SKILL_DIR, "assets", "default_cover.jpg")
 def log(msg: str):
     """带前缀的日志输出"""
     print(f"[发布助手] {msg}")
+
+
+def render_with_wenyan(markdown_text: str) -> str:
+    """Use wenyan-cli to render Markdown → WeChat-compatible HTML.
+    Falls back to formatter.py if wenyan is not available."""
+    # Try multiple ways to find wenyan
+    wenyan_bin = shutil.which("wenyan")
+    if not wenyan_bin:
+        # Check common npm global paths
+        for candidate in [
+            "/usr/local/bin/wenyan",
+            "/usr/bin/wenyan",
+            os.path.expanduser("~/.npm-global/bin/wenyan"),
+        ]:
+            if os.path.isfile(candidate):
+                wenyan_bin = candidate
+                break
+
+    if not wenyan_bin:
+        # Try npx as last resort
+        npx_bin = shutil.which("npx")
+        if npx_bin:
+            wenyan_bin = npx_bin
+            use_npx = True
+        else:
+            log("未找到 wenyan，使用内置排版引擎")
+            return markdown_to_wechat_html(markdown_text, {}, "", "")
+    else:
+        use_npx = False
+
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w", suffix=".md", delete=False, encoding="utf-8"
+        ) as tmp:
+            tmp.write(markdown_text)
+            tmp_path = tmp.name
+
+        if use_npx:
+            cmd = ["npx", "@wenyan-md/cli", "render", "-f", tmp_path, "--no-footnote"]
+        else:
+            cmd = [wenyan_bin, "render", "-f", tmp_path, "--no-footnote"]
+
+        result = subprocess.run(
+            cmd, capture_output=True, text=True, timeout=30
+        )
+        os.unlink(tmp_path)
+
+        if result.returncode == 0 and result.stdout.strip():
+            log("使用 wenyan 排版引擎")
+            return result.stdout.strip()
+        else:
+            log(f"wenyan 渲染失败: {result.stderr[:100]}，回退到内置排版")
+    except (FileNotFoundError, subprocess.TimeoutExpired) as e:
+        log(f"wenyan 不可用: {e}，回退到内置排版")
+
+    return markdown_to_wechat_html(markdown_text, {}, "", "")
 
 
 def load_config() -> dict:
@@ -210,9 +268,7 @@ def main():
 
         # ---- 4. 生成 HTML ----
         log("生成微信公众号 HTML...")
-        html_content = markdown_to_wechat_html(
-            markdown_text, image_urls, title, digest
-        )
+        html_content = render_with_wenyan(markdown_text)
         log(f"HTML 生成完成，长度: {len(html_content)} 字符")
 
         # ---- 5. 创建草稿 ----

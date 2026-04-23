@@ -153,7 +153,7 @@ python3 {baseDir}/scripts/publish.py --article 文件路径 --no-images
 ## 禁止事项（必须遵守）
 
 1. **禁止安装任何其他发布 skill** — 不要用 skillhub install wechat-publisher 或安装任何类似的 skill，本 skill 就是唯一的发布工具
-2. **禁止使用 wenyan CLI** — 不要调用 wenyan、wenyan publish、wenyan render 等任何 wenyan 命令
+2. **禁止直接调用 wenyan 命令** — wenyan 已内置在 publish.py 中作为排版引擎，不需要你手动调用 wenyan
 3. **禁止自己写 Python 脚本调 API** — 不要创建 publish_final.py 等自定义脚本，只用 {baseDir}/scripts/publish.py
 4. **禁止手动拼接 HTML 让用户复制粘贴** — 必须通过 publish.py 完成发布，不要提供"手动发布"的替代方案
 5. **禁止使用 npm/npx 安装任何发布工具** — 发布只用 publish.py
