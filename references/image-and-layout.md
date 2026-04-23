@@ -79,7 +79,7 @@
 
 ### 优先级 1：AI 生成
 
-读取 `../_shared/env-config.md` 获取 ARK_API_KEY，使用豆包 Seedream 生图。
+读取 `_shared/env-config.md` 获取 ARK_API_KEY，使用豆包 Seedream 生图。
 
 **prompt 模板（按维度组合）：**
 ```
@@ -122,7 +122,7 @@ site:unsplash.com [关键词]
 
 ### 主题色方案
 
-读取 `../_shared/extend-system.md` 检查是否有自定义主题。无自定义时使用以下内置方案：
+读取 `_shared/extend-system.md` 检查是否有自定义主题。无自定义时使用以下内置方案：
 
 | 主题 | 加粗色 | 标题装饰色 | 引用边框色 | 适用文章类型 |
 |------|--------|-----------|-----------|------------|

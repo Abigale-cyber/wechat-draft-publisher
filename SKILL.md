@@ -54,7 +54,7 @@ description: 将公众号文章转为带图的 HTML，上传图片到微信图�
 
 按优先级尝试：
 
-1. **AI 生图**：运行 `~/.agents/skills/writing/content-image-gen/scripts/generate.sh --prompt "{场景描述}" --preset {文章预设} --output {输出路径}`
+1. **AI 生图**：运行 `generate.sh --prompt "{场景描述}" --preset {文章预设} --output {输出路径}`（脚本位于 content-image-gen skill 的 `scripts/` 目录，通过相对路径 `../content-image-gen/scripts/generate.sh` 访问）
 2. **Unsplash 搜索**：用 WebSearch 搜索 `site:unsplash.com [关键词]`，选合适的图
 3. **提示用户提供**：如果以上都不可用，列出每张图的描述和尺寸要求，让用户自备
 

@@ -2,7 +2,7 @@
 
 ## 前置条件
 
-发布需要微信公众号的 API 凭证。凭证读取规范见 `../_shared/env-config.md`。
+发布需要微信公众号的 API 凭证。凭证读取规范见 `_shared/env-config.md`。
 
 **凭证读取顺序（env-config.md 定义）：**
 1. CLI 环境变量 / process.env
