@@ -87,19 +87,20 @@ python3 {baseDir}/scripts/publish.py --help
 
 如果是 wiki 链接（包含 /wiki/），先用 feishu_doc_read 读取，获取实际 docx 内容。
 
-### 步骤 2：保存为本地 Markdown 文件
+### 步骤 2：转换为正确的 Markdown 格式
 
-将读取到的文档内容保存为临时文件：
-```bash
-python3 -c "
-content = '''这里放文档内容'''
-with open('/tmp/article-to-publish.md', 'w') as f:
-    f.write(content)
-print('saved')
-"
-```
+飞书返回的内容可能是纯文本，缺少 Markdown 标记。你必须在保存文件前，将内容转为正确的 Markdown 格式：
 
-或者用 write 工具写入 `/tmp/article-to-publish.md`。
+1. **文章标题**：用第一行有意义的文字，前面加 `# ` 作为一级标题（只保留一个）
+2. **章节标题**：如 "01 xxx"、"模块一 xxx" 等段落，前面加 `## ` 变成二级标题
+3. **列表项**：以 "一次性看懂"、"把思维" 等开头的并列短句，前面加 `- ` 变成列表
+4. **表格**：转为 Markdown 表格格式（`| 列1 | 列2 |`）
+5. **金句/引用**：以 "金句："开头的段落，前面加 `> ` 变成引用
+6. **删除重复的标题行**（飞书有时会重复标题）
+
+### 步骤 3：保存为本地 Markdown 文件
+
+用 write 工具将转换后的 Markdown 内容写入 `/tmp/article-to-publish.md`。
 
 ### 步骤 3：运行发布脚本
 
@@ -143,8 +144,18 @@ python3 {baseDir}/scripts/publish.py --article 文件路径 --no-images
 ## 重要规则
 
 1. **只用 python3 命令**，不要用 cd && python3 复合命令（会被沙箱拦截）
-2. **脚本文件名是 publish.py**，不是 publisher.py
+2. **脚本文件名是 publish.py 或 publish.sh**，不是 publisher.py，也不是其他任何名字
 3. **失败时如实报告**，不要假装成功
 4. **不要读取或展示 config.json 的内容**，只报告"已配置/未配置"
 5. **封面图问题**：纯文字模式使用默认封面，如无默认封面会失败。如果因封面图失败，告诉用户需要配置图片。
 6. **wiki 链接**需要先解析为 docx 才能读取内容
+
+## 禁止事项（必须遵守）
+
+1. **禁止安装任何其他发布 skill** — 不要用 skillhub install wechat-publisher 或安装任何类似的 skill，本 skill 就是唯一的发布工具
+2. **禁止使用 wenyan CLI** — 不要调用 wenyan、wenyan publish、wenyan render 等任何 wenyan 命令
+3. **禁止自己写 Python 脚本调 API** — 不要创建 publish_final.py 等自定义脚本，只用 {baseDir}/scripts/publish.py
+4. **禁止手动拼接 HTML 让用户复制粘贴** — 必须通过 publish.py 完成发布，不要提供"手动发布"的替代方案
+5. **禁止使用 npm/npx 安装任何发布工具** — 发布只用 publish.py
+6. **封面图用默认的纯色占位图** — 不需要生成封面图，不需要用户上传封面图，--no-images 模式自动使用纯色封面
+7. 如果 publish.py 执行失败，把完整错误信息报告给用户，不要尝试其他方式
