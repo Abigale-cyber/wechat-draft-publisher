@@ -1,5 +1,6 @@
 .DS_Store
 .writing-skills/.env
+config.json
 preview-*.html
 *.log
 __pycache__/
